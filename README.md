@@ -10,4 +10,4 @@
 				
 				`void maze() {
 					//ADD YOUR CODE HERE
-				} 
+				}` 
