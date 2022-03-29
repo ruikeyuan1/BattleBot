@@ -15,6 +15,7 @@
   - eg. add your maze function into the empty maze function in MEGABOT.ino
 
     ``` cpp
+    //Line: 335
     void maze() {
     //ADD YOUR CODE HERE
     }
