@@ -223,7 +223,7 @@ class Race
 
                 increase = sqrt(x);
                 goRight(0, increase);
-                if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}
+                if(!x>2010){(x+=(distanceF > 100)?(5):(500-distanceF));}
 
             } else if(distanceF > 44) {
                 x = 0;
@@ -242,7 +242,7 @@ class Race
 
                 increase = sqrt(x);
                 goLeft(0, increase);
-                if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}
+                if(!x>2010){(x+=(distanceF > 100)?(5):(500-distanceF));}
 
             } else if(distanceF > 44) {
                 x = 0;
