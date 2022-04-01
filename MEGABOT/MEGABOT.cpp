@@ -98,6 +98,7 @@ void loop()
             client.println("HTTP/1.1 200 OK");
             client.println("Content-type:text/html");
             client.println();
+
             Linetracking lt;
             Race race;
             Maze maze;
@@ -168,6 +169,40 @@ void loop()
   }
 }
 
+void goForward() {
+    analogWrite(RBC, 0);
+    analogWrite(RFC, 170);
+    analogWrite(LBC, 0);
+    analogWrite(LFC, 170);  
+}
+
+void goBackward() {
+    analogWrite(RBC, 170);
+    analogWrite(RFC, 0);
+    analogWrite(LBC, 170);
+    analogWrite(LFC, 0);
+}
+
+void rL() {
+    analogWrite(RBC, 0);
+    analogWrite(RFC, 170);
+    analogWrite(LBC, 170);
+    analogWrite(LFC, 0);
+}
+
+void rR() {
+    analogWrite(RBC, 170);
+    analogWrite(RFC, 0);
+    analogWrite(LBC, 0);
+    analogWrite(LFC, 170);
+}
+
+void goStop() {
+    analogWrite(RBC, 0);
+    analogWrite(RFC, 0);
+    analogWrite(LBC, 0);
+    analogWrite(LFC, 0);
+}
 
 class Linetracking
 {
@@ -239,10 +274,10 @@ class Linetracking
 
     void goStop(int d)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, 0);
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, 0);
+        analogWrite(RB, 0);
+        analogWrite(RF, 0);
+        analogWrite(LB, 0);
+        analogWrite(LF, 0);
         if(d!=0)
         {
             delay(d);
@@ -251,22 +286,22 @@ class Linetracking
 
     void goForward(int d)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, 165);
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, 165);
+        analogWrite(RB, 0);
+        analogWrite(RF, 165);
+        analogWrite(LB, 0);
+        analogWrite(LF, 165);
         if(d!=0)
         {
             delay(d);
         }
     }
 
-    void goBackward(int d)
+    void goBa(int d)
     {
-        ledcWrite(RBC, 170);
-        ledcWrite(RFC, 0);
-        ledcWrite(LBC, 170);
-        ledcWrite(LFC, 0);
+        analogWrite(RB, 170);
+        analogWrite(RF, 0);
+        analogWrite(LB, 170);
+        analogWrite(LF, 0);
         if(d!=0)
         {
             delay(d);
@@ -275,10 +310,10 @@ class Linetracking
 
     void turnRight(int d, int x)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, (175+x));
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, 170);
+        analogWrite(RB, 0);
+        analogWrite(RF, (175+x));
+        analogWrite(LB, 0);
+        analogWrite(LF, 170);
         if(d!=0)
         {
             delay(d);
@@ -287,10 +322,10 @@ class Linetracking
 
     void turnLeft(int d, int x)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, 170);
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, (175+x));
+        analogWrite(RB, 0);
+        analogWrite(RF, 170);
+        analogWrite(LB, 0);
+        analogWrite(LF, (175+x));
         if(d!=0)
         {
             delay(d);
@@ -299,10 +334,10 @@ class Linetracking
 
     void rotateLeft(int d)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, 170);
-        ledcWrite(LBC, 180);
-        ledcWrite(LFC, 0);
+        analogWrite(RB, 0);
+        analogWrite(RF, 170);
+        analogWrite(LB, 180);
+        analogWrite(LF, 0);
         if(d!=0)
         {
             delay(d);
@@ -311,10 +346,10 @@ class Linetracking
 
     void rotateRight(int d)
     {
-        ledcWrite(RBC, 180);
-        ledcWrite(RFC, 0);
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, 170);
+        analogWrite(RB, 180);
+        analogWrite(RF, 0);
+        analogWrite(LB, 0);
+        analogWrite(LF, 170);
         if(d!=0)
         {
             delay(d);
@@ -323,10 +358,10 @@ class Linetracking
 
     void right(int d)
     {
-        ledcWrite(RBC, 180);
-        ledcWrite(RFC, 0);
-        ledcWrite(LBC, 0);
-        ledcWrite(LFC, 170);
+        analogWrite(RB, 180);
+        analogWrite(RF, 0);
+        analogWrite(LB, 0);
+        analogWrite(LF, 170);
         if(d!=0)
         {
             delay(d);
@@ -335,10 +370,10 @@ class Linetracking
 
     void left(int d)
     {
-        ledcWrite(RBC, 0);
-        ledcWrite(RFC, 170);
-        ledcWrite(LBC, 180);
-        ledcWrite(LFC, 0);
+        analogWrite(RB, 0);
+        analogWrite(RF, 170);
+        analogWrite(LB, 180);
+        analogWrite(LF, 0);
         if(d!=0)
         {
             delay(d);
@@ -347,7 +382,7 @@ class Linetracking
 
 };
 
-class Race
+Ra
 {   
     long durationR;
     long durationL;
