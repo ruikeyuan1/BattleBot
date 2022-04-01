@@ -177,14 +177,172 @@ class Linetracking
     int AVERAGE;
     int increaseSpeed = 0;
 
-    void execute()
-    {
+    void execute() {
 
+        if(!executed)
+        {
+        executed = true;
+        scanMap();
+        }
+        if(analogRead(rightSensor)>(MAX-(MAX/4)) && analogRead(leftSensor)>(MAX-(MAX/4))) { // BOTH SENSORS ON BLACK - STOP
+            goStop(0);
+        } else if(analogRead(leftSensor) >= (MAX-(AVERAGE/1.2))) { // LEFT SENSOR ON BLACK - ROTATE LEFT
+            increaseSpeed = 0;
+            left(0);  
+        } else if(analogRead(rightSensor) >= (MAX-(AVERAGE/1.2))) { // RIGHT SENSOR ON BLACK - ROTATE RIGHT  
+            increaseSpeed = 0;
+            right(0); 
+        } else if(analogRead(leftSensor) >= (MIN*3)) { // LEFT SENSOR APPROACHING BLACK - TURN LEFT
+            if(increaseSpeed<=2000){increaseSpeed+=5;} //gradually increase speed of one wheel
+            turnLeft(0, sqrt(increaseSpeed));
+        } else if(analogRead(rightSensor) >= (MIN*3)) { // RIGHT SENSOR APPROACHING BLACK - TURN RIGHT
+            if(increaseSpeed<=2000){increaseSpeed+=5;} //gradually increase speed of one wheel
+            turnRight(0, sqrt(increaseSpeed));
+        } else if(analogRead(leftSensor) < (MIN*3)) && analogRead(rightSensor) < (MIN*3))) { // BOTH SENSORS ON WHITE - GO
+            increaseSpeed = 0;
+            goForward(0);    
+        } 
     } 
 
     void scanMap()
     {
+        goStop(2000);
+        displ();
+        RS = analogRead(rightSensor);
+        LS = analogRead(leftSensor);
+        std::vector<int> MIN_array;
+        while(RS<200) {
+            if(RS>MAX){MAX = RS;}
+            if(LS>MAX){MAX = LS;}
+            if(RS<100){MIN_array.push_back(RS);}
+            if(LS<100){MIN_array.push_back(RS);}
+            rotateLeft(0);
+            LS = analogRead(leftSensor);
+            RS = analogRead(rightSensor);
+            displ();
+        }
+        goStop(100);
+        LS = analogRead(leftSensor);
+        RS = analogRead(rightSensor);
+        displ();
+        while(RS<500) {
+            rotateRight(0);
+            LS = analogRead(leftSensor);
+            RS = analogRead(rightSensor);
+            displ();
+        }
+        MIN = (std::accumulate(MIN_array.begin(), MIN_array.end(), 0))/MIN_array.size();
+        AVERAGE = (MAX+MIN)/2;
+        displ();
+        goStop(2000);
+    }
 
+    void goStop(int d)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, 0);
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, 0);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void goForward(int d)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, 165);
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, 165);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void goBackward(int d)
+    {
+        ledcWrite(RBC, 170);
+        ledcWrite(RFC, 0);
+        ledcWrite(LBC, 170);
+        ledcWrite(LFC, 0);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void turnRight(int d, int x)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, (175+x));
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, 170);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void turnLeft(int d, int x)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, 170);
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, (175+x));
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void rotateLeft(int d)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, 170);
+        ledcWrite(LBC, 180);
+        ledcWrite(LFC, 0);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void rotateRight(int d)
+    {
+        ledcWrite(RBC, 180);
+        ledcWrite(RFC, 0);
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, 170);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void right(int d)
+    {
+        ledcWrite(RBC, 180);
+        ledcWrite(RFC, 0);
+        ledcWrite(LBC, 0);
+        ledcWrite(LFC, 170);
+        if(d!=0)
+        {
+            delay(d);
+        }
+    }
+
+    void left(int d)
+    {
+        ledcWrite(RBC, 0);
+        ledcWrite(RFC, 170);
+        ledcWrite(LBC, 180);
+        ledcWrite(LFC, 0);
+        if(d!=0)
+        {
+            delay(d);
+        }
     }
 
 };
@@ -302,6 +460,116 @@ class Race
         return (durationL * SOUND_SPEED/2);
     }
 
+    void left()
+    {
+    analogWrite(RBC, 0);
+    analogWrite(RFC, 180);
+    analogWrite(LBC, 0);
+    analogWrite(LFC, 0);
+
+    }
+
+
+    void right()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 0);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+    }
+
+    void sleft()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 180);
+    analogWrite(LB, 0);
+    analogWrite(LF, 100);
+
+    }
+
+
+    void sright()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 100);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+    }
+
+
+    void ssleft()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 210);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+
+    }
+
+
+    void ssright()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 180);
+    analogWrite(LB, 0);
+    analogWrite(LF, 210);
+    }
+
+
+    void rotateRight()
+    {
+    analogWrite(RB, 180);
+    analogWrite(RF, 0);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+    
+    }
+
+    void rotateLeft()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 180);
+    analogWrite(LB, 180);
+    analogWrite(LF, 0);
+    
+    }
+
+    void ra()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 180);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+    
+    }
+
+    void goLeft(int x)
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 200+x);
+    analogWrite(LB, 0);
+    analogWrite(LF, 180);
+    
+    }
+
+    void goRight(int x)
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 180);
+    analogWrite(LB, 0);
+    analogWrite(LF, 200+x);
+    
+    }
+
+    void goStop()
+    {
+    analogWrite(RB, 0);
+    analogWrite(RF, 0);
+    analogWrite(LB, 0);
+    analogWrite(LF, 0);
+    
+    }
+
 };
 
 class Maze
@@ -353,6 +621,52 @@ class Maze
         return distance;
         //delay(1000);
         }
+
+    void rotateRight() {
+        int time = millis(); //time=2000;  
+        int timeToRotate = 440+time; // 2700
+        while(time <= timeToRotate){ // 2000 <= 2700
+            turnRight();
+            time = millis(); // 2001 2002 2003 ... 2700
+            }
+    }
+
+    void rotateLeft() {
+        int time = millis(); //time=2000;  
+        int timeToRotate = 700+time; // 2700
+        while(time <= timeToRotate){ // 2000 <= 2700
+            turnLeft();
+            time = millis(); // 2001 2002 2003 ... 2700
+            }
+    }
+
+    void Forward(){
+        analogWrite(rightAhead, 190);
+        analogWrite(leftAhead, 190);
+        analogWrite(rightBack, 0);
+        analogWrite(leftBack, 0);
+    }
+
+    void stopRobot(){
+        analogWrite(rightBack, 0);
+        analogWrite(leftAhead, 0);
+        analogWrite(rightAhead, 0);
+        analogWrite(leftBack, 0);
+    }
+
+    void turnRight(){
+        analogWrite(rightBack, 190);
+        analogWrite(leftAhead, 190);
+        analogWrite(rightAhead, 0);
+        analogWrite(leftBack, 0);      
+    }
+
+    void turnLeft(){
+        analogWrite(rightBack, 0);
+        analogWrite(leftAhead, 0);
+        analogWrite(rightAhead, 190);
+        analogWrite(leftBack, 190);      
+    }
 
 };
 
