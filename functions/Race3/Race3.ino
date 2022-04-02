@@ -199,6 +199,11 @@ void loop() {
        x = 0;
        racegoForward();
     }
+    else if(distanceF > 60)
+    {
+      x = 0;
+      racegoForward();
+    }
     else if(distanceF > 44)
     {
       Serial.println("1");
@@ -304,9 +309,9 @@ void loop() {
 void left()
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 180);
+  ledcWrite(RFC, 200);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 100);
+  ledcWrite(LFC, 120);
 
 }
 
@@ -314,25 +319,25 @@ void left()
 void right()
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 100);
+  ledcWrite(RFC, 120);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 180);
+  ledcWrite(LFC, 200);
 }
 
 void rotateRight()
 {
-  ledcWrite(RBC, 180);
+  ledcWrite(RBC, 200);
   ledcWrite(RFC, 0);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 180);
+  ledcWrite(LFC, 200);
   
 }
 
 void rotateLeft()
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 180);
-  ledcWrite(LBC, 180);
+  ledcWrite(RFC, 200);
+  ledcWrite(LBC, 200);
   ledcWrite(LFC, 0);
   
 }
@@ -340,27 +345,27 @@ void rotateLeft()
 void racegoForward()
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 180);
+  ledcWrite(RFC, 200);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 180);
+  ledcWrite(LFC, 200);
   
 }
 
 void goLeft(int x)
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 190+x);
+  ledcWrite(RFC, 210+x);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 180);
+  ledcWrite(LFC, 200);
   
 }
 
 void goRight(int x)
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 180);
+  ledcWrite(RFC, 200);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 190+x);
+  ledcWrite(LFC, 210+x);
   
 }
 

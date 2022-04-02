@@ -29,6 +29,7 @@ long durationR;
 long durationL;
 float distanceR;
 float distanceL;
+int distanceF;
 
 int leftSensor = 39;
 int rightSensor = 34;
@@ -92,13 +93,7 @@ void setup() {
   pinMode(rightE, INPUT); // Sets the rightE as an Input
   pinMode(leftT, OUTPUT); // Sets the rightT as an Output
   pinMode(leftE, INPUT); // Sets the rightE as an Input
-  if (!lox.begin()) {
-    Serial.println(F("Failed to boot VL53L0X"));
-    while(1);
-  }
-  //Initiate INPUT for Color Sensors
-  pinMode (leftSensor, INPUT);
-  pinMode (rightSensor, INPUT);
+  lox.begin();
 
   //Attach Motors to Channels
   ledcAttachPin(RB, RBC);
@@ -121,182 +116,118 @@ void setup() {
 }
 
 void loop() {
-  VL53L0X_RangingMeasurementData_t measure;
-  lox.rangingTest(&measure, false);
-  // Clears the rightT
-  digitalWrite(rightT, LOW);
-  delayMicroseconds(2);
-  // Sets the rightT on HIGH state for 10 micro seconds
-  digitalWrite(rightT, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(rightT, LOW);
-
-  durationR = pulseIn(rightE, HIGH);
+    VL53L0X_RangingMeasurementData_t measure;
+    
+    lox.rangingTest(&measure, false);
+    
+    digitalWrite(rightT, LOW);
+    delayMicroseconds(2);
+    digitalWrite(rightT, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(rightT, LOW);
   
-  // Calculate the distance
-  distanceR = durationR * SOUND_SPEED/2;
-  
-  
-  digitalWrite(leftT, LOW);
-  delayMicroseconds(2);
-  // Sets the rightT on HIGH state for 10 micro seconds
-  digitalWrite(leftT, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(leftT, LOW);
+    durationR = pulseIn(rightE, HIGH);
+    distanceR = durationR * SOUND_SPEED/2;
+    
+    
+    digitalWrite(leftT, LOW);
+    delayMicroseconds(2);
+    digitalWrite(leftT, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(leftT, LOW);
 
-  
-  // Reads the rightE, returns the sound wave travel time in microseconds
-  durationL = pulseIn(leftE, HIGH);
-  
-  // Calculate the distance
-  distanceL = durationL * SOUND_SPEED/2;
+    durationL = pulseIn(leftE, HIGH);
+    distanceL = durationL * SOUND_SPEED/2;
 
-  int distanceF = measure.RangeMilliMeter/10;
-   Serial.println();
-   Serial.println("-------------");
-   Serial.println();
-   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-      Serial.print("Forward: "); Serial.print(distanceF);
-    } else {
-      Serial.println(" out of range ");
-    }
-
-
-  // Prints the distance in the Serial Monitor
-  Serial.print(" || Right: ");
-  Serial.print(distanceR);
-  Serial.print(" cm ||");
-  Serial.print("Left: ");
-  Serial.print(distanceL);
-  Serial.print(" cm");
-    int disp = 8;
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0, 0);
-    display.print("Left: ");
-    display.print(distanceL);
-    display.setCursor(0, disp);
-    display.print("Right: ");
-    display.print(distanceR);
-    display.setCursor(0, disp*2);
-    display.print("Forward: ");
-    display.print(distanceF);
-    display.display();
-    Serial.println();
+    distanceF = measure.RangeMilliMeter/10;
     int x = 1;
     int increase;
 
-    Serial.println("0");
+    
     if(distanceL < 10 && distanceF < 10 && distanceR < 10 )
     {
         x = 0;
-        Serial.println("1.4");
         goStop();
     }
+    
     else if(distanceF > distanceR && distanceF > distanceL)
     {
        x = 0;
        racegoForward();
+       if(distanceL <= 11 && distanceR >= 35)
+       {
+          ssright();
+       }
+       else if(distanceR <= 11 && distanceL >= 35)
+       {
+          ssleft(); 
+       }
     }
-    else if(distanceF > 44)
+    
+    else if(distanceF > 60)
     {
-      Serial.println("1");
-      if(distanceF > distanceR && distanceF > distanceL)
+      if(distanceR > distanceL)
       {
-        Serial.println("1.1");
-        x = 0;
-        racegoForward();
-      }
-  
-      else if(distanceR > distanceL)
-      {
-        Serial.println("1.2");
         increase = sqrt(x);
         goRight(increase);
-        if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}
+        if(!x>2010) {
+          x+=(distanceF > 100)?(5):(100-distanceF);
+          }
       }
-  
       else if(distanceL > distanceR)
       {
-        Serial.println("1.3");
         increase = sqrt(x);
         goLeft(increase);
-        if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}  
-      }
-      else if(distanceL < 10 && distanceF < 10 && distanceR < 10 )
-      {
-        x = 0;
-        Serial.println("1.4");
-        goStop();
+        if(!x>2010) {
+          x+=(distanceF > 100)?(5):(100-distanceF);
+          }  
       }
     } 
-    else if(distanceF > 25)
+    
+    else if(distanceF > 44)
     {
       x = 0;
-      Serial.println("2");
-      if(distanceF > distanceR && distanceF > distanceL)
+      if(distanceR > distanceL)
       {
-        Serial.println("2.1");
         x = 0;
-        racegoForward();
+        sright();
       }
-  
-      else if(distanceR > distanceL)
+      else if(distanceL > distanceR)
       {
         x = 0;
-        Serial.println("2.2");
+        sleft(); 
+      }
+    }
+    
+    else if(distanceF > 20)
+    {
+      x = 0;
+      if(distanceR > distanceL)
+      {
+        x = 0;
         right();
       }
-  
       else if(distanceL > distanceR)
       {
         x = 0;
-        Serial.println("2.3");
         left(); 
       }
-      else if(distanceL < 10 && distanceF < 10 && distanceR < 10 )
-      { 
-        x = 0;
-        Serial.println("2.4");
-        goStop();
-      }
     }
-    else if(distanceF <= 25)
+    
+    else if(distanceF <= 20)
     {
       x = 0;
-      Serial.println("3");
-      if(distanceF > distanceR && distanceF > distanceL)
-      {
-        Serial.println("2.1");
-        x = 0;
-        racegoForward();
-      }
-      else if(distanceR > distanceL)
+      if(distanceR > distanceL)
       {
         x = 0;
-        Serial.println("3.1");
         rotateRight();
       }
-  
       else if(distanceL > distanceR)
       {
         x = 0;
-        Serial.println("3.2");
         rotateLeft(); 
       }
-      else if(distanceL < 10 && distanceF < 10 && distanceR < 10 )
-      { 
-        x = 0;
-        Serial.println("3.3");
-        goStop();
-      }
     }
- 
-  
-    Serial.println();
-   Serial.println("-------------");
-   Serial.println();
 
   
 }
@@ -306,7 +237,7 @@ void left()
   ledcWrite(RBC, 0);
   ledcWrite(RFC, 180);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 100);
+  ledcWrite(LFC, 0);
 
 }
 
@@ -314,10 +245,48 @@ void left()
 void right()
 {
   ledcWrite(RBC, 0);
+  ledcWrite(RFC, 0);
+  ledcWrite(LBC, 0);
+  ledcWrite(LFC, 180);
+}
+
+void sleft()
+{
+  ledcWrite(RBC, 0);
+  ledcWrite(RFC, 180);
+  ledcWrite(LBC, 0);
+  ledcWrite(LFC, 100);
+
+}
+
+
+void sright()
+{
+  ledcWrite(RBC, 0);
   ledcWrite(RFC, 100);
   ledcWrite(LBC, 0);
   ledcWrite(LFC, 180);
 }
+
+
+void ssleft()
+{
+  ledcWrite(RBC, 0);
+  ledcWrite(RFC, 210);
+  ledcWrite(LBC, 0);
+  ledcWrite(LFC, 180);
+
+}
+
+
+void ssright()
+{
+  ledcWrite(RBC, 0);
+  ledcWrite(RFC, 180);
+  ledcWrite(LBC, 0);
+  ledcWrite(LFC, 210);
+}
+
 
 void rotateRight()
 {
@@ -349,7 +318,7 @@ void racegoForward()
 void goLeft(int x)
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 190+x);
+  ledcWrite(RFC, 200+x);
   ledcWrite(LBC, 0);
   ledcWrite(LFC, 180);
   
@@ -360,7 +329,7 @@ void goRight(int x)
   ledcWrite(RBC, 0);
   ledcWrite(RFC, 180);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 190+x);
+  ledcWrite(LFC, 200+x);
   
 }
 
