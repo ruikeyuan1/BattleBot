@@ -539,11 +539,11 @@ class Linetracking //LTV8_2!!!
     
     void executeMAYBE() {
       
-        if(!executed)
-        {
-          executed = true;
-          scanMap();
-        }
+//        if(!executed)
+//        {
+//          executed = true;
+//          scanMap();
+//        }
         //OK STOP
         boolean fix = false;
         boolean black = false;
@@ -559,7 +559,7 @@ class Linetracking //LTV8_2!!!
               check = true;
               goStop(150); 
             }
-            while(analogRead(leftSensor)<(approachingBLACK) && analogRead(rightSensor)<(MAX-(AVERAGE)))
+            while(analogRead(leftSensor)<(approachingBLACK) && analogRead(rightSensor)<(approachingBLACK))
             {
               rotateLeft();
             } 
@@ -571,7 +571,7 @@ class Linetracking //LTV8_2!!!
               check = true;
               goStop(150); 
             }
-            while(analogRead(rightSensor)<(MAX-(AVERAGE)))
+            while(analogRead(rightSensor)<(approachingBLACK) && analogRead(leftSensor)<(approachingBLACK))
             {
               rotateRight();
             } 
@@ -586,7 +586,7 @@ class Linetracking //LTV8_2!!!
             Sright();
         }
       
-        if(analogRead(leftSensor) < (BLACKK) && analogRead(rightSensor) < (BLACKK)) {
+        if(analogRead(leftSensor) < (approachingBLACK) && analogRead(rightSensor) < (approachingBLACK)) {
             check = false;
             goForward();
         }
