@@ -63,160 +63,6 @@ int fixx = 0;
 void track(int LS, int RS);
 
 //Movement functions
-void goStop(int d);
-void goForward(int d);
-void goBackward(int d);
-void turnRight(int d, int x);
-void turnLeft(int d, int x);
-void rotateLeft(int d);
-void rotateRight(int d);
-void left(int d);
-void right(int d);
-void linetracking();
-void scanMap();
-void maze();
-void race();
-void ctf();
-void displ();
-
-
-
-
-void setup() {
-  Serial.begin(115200);
-
- 
-//-------------------------------WIFI )--------------------------
-
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  pinMode(rightT, OUTPUT); // Sets the rightT as an Output
-  pinMode(rightE, INPUT); // Sets the rightE as an Input
-  pinMode(leftT, OUTPUT); // Sets the rightT as an Output
-  pinMode(leftE, INPUT); // Sets the rightE as an Input
-  lox.begin();
-
-  //Attach Motors to Channels
-  ledcAttachPin(RB, RBC);
-  ledcAttachPin(RF, RFC);
-  ledcAttachPin(LB, LBC);
-  ledcAttachPin(LF, LFC);
-
-  //Setup the Channels
-  ledcSetup(RBC, freq, resolution);
-  ledcSetup(RFC, freq, resolution);
-  ledcSetup(LBC, freq, resolution);
-  ledcSetup(LFC, freq, resolution);
-
-  //Stop Motors
-  ledcWrite(RBC, 0);
-  ledcWrite(RFC, 0);
-  ledcWrite(LBC, 0);
-  ledcWrite(LFC, 0);
-  
-}
-
-void loop() {
-    VL53L0X_RangingMeasurementData_t measure;
-    
-    lox.rangingTest(&measure, false);
-    
-    digitalWrite(rightT, LOW);
-    delayMicroseconds(2);
-    digitalWrite(rightT, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(rightT, LOW);
-  
-    durationR = pulseIn(rightE, HIGH);
-    distanceR = durationR * SOUND_SPEED/2;
-    
-    
-    digitalWrite(leftT, LOW);
-    delayMicroseconds(2);
-    digitalWrite(leftT, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(leftT, LOW);
-
-    durationL = pulseIn(leftE, HIGH);
-    distanceL = durationL * SOUND_SPEED/2;
-
-    distanceF = measure.RangeMilliMeter/10;
-    int x = 1;
-    int increase;
-
-    
-    if(distanceL < 10 && distanceF < 10 && distanceR < 10 )
-    {
-        x = 0;
-        goStop();
-    }
-    
-    else if(distanceF > distanceR && distanceF > distanceL)
-    {
-      x = 0;
-      racegoForward(0);
-      if(distanceL <= 11 && distanceR >= 33)
-      {
-          ssright();
-      }
-      else if(distanceR <= 11 && distanceL >= 33)
-      {
-          ssleft(); 
-      }
-    }
-
-    if(distanceR > distanceL)
-    {
-      if(distanceF > 55)
-      {
-        increase = sqrt(x);
-        goRight(0, increase);
-        if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}
-      }
-      else if(distanceF > 44)
-      {
-         x = 0;
-         sright();
-      }
-      else if(distanceF > 22)
-      {
-         x = 0;
-         right();
-      }
-      else if(distanceF <= 22)
-      {
-         x = 0;
-         rotateRight();
-      }
-    }
-
-    if(distanceL > distanceR)
-    {
-      if(distanceF > 55)
-      {
-        increase = sqrt(x);
-        goLeft(0, increase);
-        if(!x>2010){(x+=(distanceF > 100)?(5):(100-distanceF));}
-      }
-      else if(distanceF > 44)
-      {
-         x = 0;
-         sleft();
-      }
-      else if(distanceF > 22)
-      {
-         x = 0;
-         left();
-      }
-      else if(distanceF <= 22)
-      {
-         x = 0;
-         rotateLeft();
-      }
-    }
-
-  
-}
-
 void left()
 {
   ledcWrite(RBC, 0);
@@ -291,12 +137,12 @@ void rotateLeft()
   
 }
 
-void racegoForward()
+void racegoForward(int x)
 {
   ledcWrite(RBC, 0);
-  ledcWrite(RFC, 180);
+  ledcWrite(RFC, x);
   ledcWrite(LBC, 0);
-  ledcWrite(LFC, 180);
+  ledcWrite(LFC, x);
   
 }
 
@@ -327,6 +173,139 @@ void goStop()
   
 }
 //
+
+
+
+
+void setup() {
+  Serial.begin(115200);
+
+ 
+//-------------------------------WIFI )--------------------------
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  pinMode(rightT, OUTPUT); // Sets the rightT as an Output
+  pinMode(rightE, INPUT); // Sets the rightE as an Input
+  pinMode(leftT, OUTPUT); // Sets the rightT as an Output
+  pinMode(leftE, INPUT); // Sets the rightE as an Input
+  lox.begin();
+
+  //Attach Motors to Channels
+  ledcAttachPin(RB, RBC);
+  ledcAttachPin(RF, RFC);
+  ledcAttachPin(LB, LBC);
+  ledcAttachPin(LF, LFC);
+
+  //Setup the Channels
+  ledcSetup(RBC, freq, resolution);
+  ledcSetup(RFC, freq, resolution);
+  ledcSetup(LBC, freq, resolution);
+  ledcSetup(LFC, freq, resolution);
+
+  //Stop Motors
+  ledcWrite(RBC, 0);
+  ledcWrite(RFC, 0);
+  ledcWrite(LBC, 0);
+  ledcWrite(LFC, 0);
+  
+}
+
+void loop() {
+    VL53L0X_RangingMeasurementData_t measure;
+    
+    lox.rangingTest(&measure, false);
+    
+    digitalWrite(rightT, LOW);
+    delayMicroseconds(2);
+    digitalWrite(rightT, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(rightT, LOW);
+  
+    durationR = pulseIn(rightE, HIGH);
+    distanceR = durationR * SOUND_SPEED/2;
+    
+    
+    digitalWrite(leftT, LOW);
+    delayMicroseconds(2);
+    digitalWrite(leftT, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(leftT, LOW);
+
+    durationL = pulseIn(leftE, HIGH);
+    distanceL = durationL * SOUND_SPEED/2;
+
+    distanceF = measure.RangeMilliMeter/10;
+    int x = 1;
+    int increase;
+
+    
+    if(distanceL < 10 && distanceF < 10 && distanceR < 10 ) {
+            
+            x = 0;
+            goStop();
+
+        } else if(distanceF > distanceR && distanceF > distanceL) {
+
+            x = 0;
+            if(distanceF > 55) {
+              racegoForward(255);
+            } else if(distanceF > 44) {
+              racegoForward(200);
+            } else if(distanceF > 22) {
+              racegoForward(180);
+            } else if(distanceF <= 22) {
+              racegoForward(150);
+            }
+            
+            if(distanceL <= 11 && distanceR >= 33) {
+                ssright();
+            } else if(distanceR <= 11 && distanceL >= 33) {
+                ssleft(); 
+            }
+
+        } else if(distanceR > distanceL) {
+
+            if(distanceF > 55) {
+
+                increase = sqrt(x);
+                goRight(increase);
+                if(!x>2010){(x+=(distanceF > 100)?(5):(500-distanceF));}
+
+            } else if(distanceF > 44) {
+                x = 0;
+                sright(); 
+            } else if(distanceF > 22) {
+                x = 0;
+                right();
+            } else if(distanceF <= 22) {
+                x = 0;
+                rotateRight();
+            }
+
+        } else if(distanceL > distanceR) {
+            
+            if(distanceF > 55) {
+
+                increase = sqrt(x);
+                goLeft(increase);
+                if(!x>2010){(x+=(distanceF > 100)?(5):(500-distanceF));}
+
+            } else if(distanceF > 44) {
+                x = 0;
+                sleft();
+            } else if(distanceF > 22) {
+                x = 0;
+                left();
+            } else if(distanceF <= 22) {
+                x = 0;
+                rotateLeft();
+            }
+        }
+    }
+
+  
+
+
 //void displ()
 //{
 //    
