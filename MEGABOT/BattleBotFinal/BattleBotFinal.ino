@@ -463,7 +463,6 @@ class Linetracking //LTV8_2!!!
           
           else if(analogRead(leftSensor) >= (MAX-(AVERAGE/1.5))) // LEFT SENSOR ON BLACK - ROTATE LEFT
           { 
-              rotateLeft(50);
               goStop(100);
               Serial.println("LEFT");
               //reset values
@@ -474,25 +473,24 @@ class Linetracking //LTV8_2!!!
               }
               while(analogRead(leftSensor)>=(MIN*3.5) && analogRead(rightSensor)<(MIN*3))
               {
-                left3(0);
+                left();
               }
          
           }
         
           else if(analogRead(rightSensor) >= (MAX-(AVERAGE/1.5))) // RIGHT SENSOR ON BLACK - ROTATE RIGHT
           {  
-              rotateRight(50);
               goStop(100);
               Serial.println("RIGHT");
               //reset values
               increaseSpeed = 0;
               while(analogRead(rightSensor)<(MIN*3.5) && analogRead(leftSensor)<(MIN*3))
               {
-                rotateRight(0);
+                rotateRight();
               }
               while(analogRead(rightSensor)>=(MIN*3.5) && analogRead(leftSensor)<(MIN*3))
               {
-                right3(0);
+                right();
               }
          
           }
@@ -501,14 +499,14 @@ class Linetracking //LTV8_2!!!
           {
             Serial.println("APPROACHING LEFT");
               if(increaseSpeed<=2000){increaseSpeed+=7;} //gradually increase speed of one wheel
-              turnLeft(0, sqrt(increaseSpeed));
+              turnLeft(sqrt(increaseSpeed));
           }
         
           else if(analogRead(rightSensor) >= (MIN*4)) // RIGHT SENSOR APPROACHING BLACK - TURN RIGHT
           {
             Serial.println("APPROACHING RIGHT");
               if(increaseSpeed<=2000){increaseSpeed+=7;} //gradually increase speed of one wheel
-              turnRight(0, sqrt(increaseSpeed));
+              turnRight(sqrt(increaseSpeed));
           }
           
           else if(analogRead(leftSensor) < (MIN*4) && analogRead(rightSensor) < (MIN*4)) // BOTH SENSORS ON WHITE - GO
@@ -517,7 +515,7 @@ class Linetracking //LTV8_2!!!
               //reset values
               
               increaseSpeed = 0;
-              goForward(0);    
+              goForward();    
           }
     }
 //           
@@ -970,8 +968,13 @@ class Maze
 
 };
 
-unsigned char TSSID[] = "ESP-32_test_E";
-unsigned char* ssidToCatch = TSSID;
+Linetracking lt;
+Maze maze;
+Race race;
+
+String TSSID = "ESP-32_test_E";
+unsigned char* ssidToCatch = (unsigned char*) TSSID.c_str();
+//(unsigned char*) currentLine.substring(5, ssidLength - 14).c_str();
 long rssidToCatch = -1000;
 
 class CTF {
@@ -984,6 +987,30 @@ class CTF {
     long prevSignal = rssidToCatch;
     int foundRSSI;
 
+    void goForward() {
+      analogWrite(RB, 0);
+      analogWrite(RF, 180);
+      analogWrite(LB, 0);
+      analogWrite(LF, 180);
+    }
+
+    void goBackward() {
+      analogWrite(RB, 180);
+      analogWrite(RF, 0);
+      analogWrite(LB, 180);
+      analogWrite(LF, 0);
+    }
+
+    void goStop(int d) {
+      analogWrite(RB, 0);
+      analogWrite(RF, 0);
+      analogWrite(LB, 0);
+      analogWrite(LF, 0);
+      if(d!=0) {
+        delay(d);
+      }
+    }
+    
     void goBackwardLeft() {
       analogWrite(RB, 255);
       analogWrite(RF, 0);
@@ -997,11 +1024,7 @@ class CTF {
       analogWrite(LB, 255);
       analogWrite(LF, 0);
     }
-
-    void takeFlag() {
-      //
-    }
-
+    
     void findSignal() {
       Serial.println("scan start");
       // WiFi.scanNetworks will return the number of networks found
@@ -1014,7 +1037,7 @@ class CTF {
         Serial.println(" networks found");
         for (int i = 0; i < n; ++i) {
 
-          if(WiFi.SSID(i) == ssidToCatch){
+          if(WiFi.SSID(i) == (const char*) ssidToCatch){
             found = true;
             rssidToCatch = WiFi.RSSI(i);
             foundRSSI = i;
@@ -1080,20 +1103,18 @@ class CTF {
       rssidToCatch = WiFi.RSSI(foundRSSI);
       
       if(found) {
-        if(rssidToCatch > treshhold){takeFlag();}
         
         if(rssidToCatch < prevSignal) {
           if(!hasHighestPrev) {
             hasHighestPrev = true;
             highestPrev = prevSignal;
           }
-          starttime = millis();
-          endtime = starttime;
+          int starttime = millis();
+          int endtime = starttime;
           boolean foundAgain = false;
           int randMove = random(0,2);
           findSignal();
           while( (endtime - starttime) <= 2500 && WiFi.RSSI(foundRSSI) < highestPrev-3) {
-            if(rssidToCatch > treshhold){takeFlag();}
             if(randMove == 0) {
               goBackwardLeft();
             } else { 
@@ -1108,12 +1129,11 @@ class CTF {
           if(foundAgain) {
             goStop(100);
             findSignal();
-            if(WiFi.RSSI(foundRSSI)) >= highestPrev-3) {
+            if(WiFi.RSSI(foundRSSI) >= highestPrev-3) {
               prevSignal = highestPrev-4;
               findSignal();
               rssidToCatch = WiFi.RSSI(foundRSSI);
               while(rssidToCatch > prevSignal) {
-                if(rssidToCatch > treshhold){takeFlag();}
                 prevSignal = rssidToCatch;
                 findSignal();
                 rssidToCatch = WiFi.RSSI(foundRSSI);
@@ -1126,14 +1146,13 @@ class CTF {
           
         }
         
-        if(rssidToCatch > treshhold){takeFlag();}
         hasHighestPrev = false;
         foundAgain = false;
         goForward();
         
       } else {
         findSignal();
-        RACE.execute();
+        race.execute();
       }
       
     }
@@ -1147,23 +1166,14 @@ class CTF {
       }
       else 
       {
-        RACE.execute();
+        race.execute();
       }
     }
   
   
 };
 
-
-
-
-
-
-Linetracking lt;
-Maze maze;
-Race race;
 CTF ctf;
-
 
 boolean testIfCommand(String line)
 {
@@ -1248,14 +1258,12 @@ void executeGETRequest(String currentLine)
           if(currentLine.endsWith("GET /giveFlag"))
           {
               hasFlag = true;
-              digitalWrite(LED_BUILTIN, HIGH);
-              CTF.runAway();
+              ctf.runAway();
           }
           if(currentLine.endsWith("GET /findFlag"))
           {
               hasFlag = false;
-              digitalWrite(LED_BUILTIN, LOW);
-              CTF.findFlag();
+              ctf.findFlag();
           }
     //    if(currentLine.endsWith("GET /turnLeftOrRight"))
     //    {
