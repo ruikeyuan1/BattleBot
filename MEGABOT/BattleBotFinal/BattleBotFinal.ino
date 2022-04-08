@@ -769,6 +769,8 @@ class Race {
       if(distanceL < 5 && distanceF < 5 && distanceR < 5 ) {
           
           x = 0;
+          sqrtRight = 0;
+          sqrtLeft = 0;
           goStop();
 
       } else if(distanceF > distanceR && distanceF > distanceL && distanceF > 5) {
