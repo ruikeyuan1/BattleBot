@@ -994,7 +994,7 @@ class Maze
             Forward();
             delay(150);
         }
-        else if(distanceS>20 && distanceS<125){
+        else if(distanceS>27 && distanceS<125){
           stopRobot();
           delay(250);
           turnRight();
