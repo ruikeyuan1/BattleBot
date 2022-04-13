@@ -752,7 +752,7 @@ class Race {
             x = 0;
             goStop();
 
-        } else if(distanceF > distanceR && distanceF > distanceL && distanceF > 5) {
+        } else if(distanceF > distanceR && distanceF > distanceL) {
 
             Serial.println("FFF");
             x = 0;
@@ -761,9 +761,9 @@ class Race {
             } else if(distanceF > 40) {
               this->racegoForward(200);
             } else if(distanceF > 20) {
-              this->racegoForward(180);
+              this->racegoForward(190);
             } else if(distanceF <= 20) {
-              this->racegoForward(150);
+              this->racegoForward(180);
             }
             
             if(distanceL <= 8 && distanceR >= 12) {
@@ -773,7 +773,7 @@ class Race {
                 this->ssleft(); 
             }
 
-        } else if(distanceR > distanceL && distanceR > 5) {
+        } else if(distanceR > distanceL) {
 
             Serial.println("RRR");
             if(distanceF > 50) {
@@ -796,7 +796,7 @@ class Race {
                 this->rotateRight();
             }
 
-        } else if(distanceL > distanceR && distanceL > 5) {
+        } else if(distanceL > distanceR) {
 
              Serial.println("LLL");
             if(distanceF > 50) {
@@ -818,7 +818,7 @@ class Race {
                 x = 0;
                 this->rotateLeft();
             }
-        } else {goBackward(250);}
+        }
         WiFiClient client = server.available(); 
         if (client) {                             // if you get a client,
             String currentLine = "";                // make a String to hold incoming data from the client
@@ -843,109 +843,109 @@ class Race {
 
 
 
-
-class Maze
-{
-
-  public:  
-
-    long durationS;
-    float distanceS;
-    int distanceF;
-    
-
-    void rotateRight() {
-        int time = millis(); //time=2000;  
-        int timeToRotate = 440+time; // 2700
-        while(time <= timeToRotate){ // 2000 <= 2700
-            turnRight();
-            time = millis(); // 2001 2002 2003 ... 2700
-            }
-    }
-
-    void rotateLeft() {
-        int time = millis(); //time=2000;  
-        int timeToRotate = 700+time; // 2700
-        while(time <= timeToRotate){ // 2000 <= 2700
-            turnLeft();
-            time = millis(); // 2001 2002 2003 ... 2700
-            }
-    }
-
-    void Forward(){
-        analogWrite(RF, 190);
-        analogWrite(LF, 190);
-        analogWrite(RB, 0);
-        analogWrite(LB, 0);
-    }
-
-    void stopRobot(){
-        analogWrite(RB, 0);
-        analogWrite(LF, 0);
-        analogWrite(RF, 0);
-        analogWrite(LB, 0);
-    }
-
-    void turnRight(){
-        analogWrite(RB, 190);
-        analogWrite(LF, 190);
-        analogWrite(RF, 0);
-        analogWrite(LB, 0);      
-    }
-
-    void turnLeft(){
-        analogWrite(RB, 0);
-        analogWrite(LF, 0);
-        analogWrite(RF, 190);
-        analogWrite(LB, 190);      
-    }
-
-
-
-
-    void execute()
-    {   
-        VL53L0X_RangingMeasurementData_t measure;
-        lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-        if (measure.RangeStatus != 4) {  // phase failures have incorrect data 
-            distanceF = measure.RangeMilliMeter/10; 
-        }
-        
-        digitalWrite(TrigPin, LOW);
-        delayMicroseconds(2);
-        digitalWrite(TrigPin, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(TrigPin, LOW);
-        durationS = pulseIn(EchoPin, HIGH); 
-        distanceS = (durationS * SOUND_SPEED/2);
-    
-        digitalWrite(leftT, LOW);
-        delayMicroseconds(2);
-        digitalWrite(leftT, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(leftT, LOW);
-        durationL = pulseIn(leftE, HIGH);  
-        distanceL = (durationL * SOUND_SPEED/2);
-    
-        
-        if (distanceF > distanceS && distanceF > 20) {
-            stopRobot();
-            delay(100);
-            Forward();
-        } else if(distanceS > distanceL && distanceS>20) {
-            stopRobot();
-            delay(100);
-            turnRight();
-            delay(350);
-        } else {
-            stopRobot();
-            delay(100);
-            turnLeft();
-            delay(350);
-        }
-    }
-
-};
+//
+//class Maze
+//{
+//
+//  public:  
+//
+//    long durationS;
+//    float distanceS;
+//    int distanceF;
+//    
+//
+//    void rotateRight() {
+//        int time = millis(); //time=2000;  
+//        int timeToRotate = 440+time; // 2700
+//        while(time <= timeToRotate){ // 2000 <= 2700
+//            turnRight();
+//            time = millis(); // 2001 2002 2003 ... 2700
+//            }
+//    }
+//
+//    void rotateLeft() {
+//        int time = millis(); //time=2000;  
+//        int timeToRotate = 700+time; // 2700
+//        while(time <= timeToRotate){ // 2000 <= 2700
+//            turnLeft();
+//            time = millis(); // 2001 2002 2003 ... 2700
+//            }
+//    }
+//
+//    void Forward(){
+//        analogWrite(RF, 190);
+//        analogWrite(LF, 190);
+//        analogWrite(RB, 0);
+//        analogWrite(LB, 0);
+//    }
+//
+//    void stopRobot(){
+//        analogWrite(RB, 0);
+//        analogWrite(LF, 0);
+//        analogWrite(RF, 0);
+//        analogWrite(LB, 0);
+//    }
+//
+//    void turnRight(){
+//        analogWrite(RB, 190);
+//        analogWrite(LF, 190);
+//        analogWrite(RF, 0);
+//        analogWrite(LB, 0);      
+//    }
+//
+//    void turnLeft(){
+//        analogWrite(RB, 0);
+//        analogWrite(LF, 0);
+//        analogWrite(RF, 190);
+//        analogWrite(LB, 190);      
+//    }
+//
+//
+//
+//
+//    void execute()
+//    {   
+//        VL53L0X_RangingMeasurementData_t measure;
+//        lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+//        if (measure.RangeStatus != 4) {  // phase failures have incorrect data 
+//            distanceF = measure.RangeMilliMeter/10; 
+//        }
+//        
+//        digitalWrite(TrigPin, LOW);
+//        delayMicroseconds(2);
+//        digitalWrite(TrigPin, HIGH);
+//        delayMicroseconds(10);
+//        digitalWrite(TrigPin, LOW);
+//        durationS = pulseIn(EchoPin, HIGH); 
+//        distanceS = (durationS * SOUND_SPEED/2);
+//    
+//        digitalWrite(leftT, LOW);
+//        delayMicroseconds(2);
+//        digitalWrite(leftT, HIGH);
+//        delayMicroseconds(10);
+//        digitalWrite(leftT, LOW);
+//        durationL = pulseIn(leftE, HIGH);  
+//        distanceL = (durationL * SOUND_SPEED/2);
+//    
+//        
+//        if (distanceF > distanceS && distanceF > 20) {
+//            stopRobot();
+//            delay(100);
+//            Forward();
+//        } else if(distanceS > distanceL && distanceS>20) {
+//            stopRobot();
+//            delay(100);
+//            turnRight();
+//            delay(350);
+//        } else {
+//            stopRobot();
+//            delay(100);
+//            turnLeft();
+//            delay(350);
+//        }
+//    }
+//
+//};
 
 
 
@@ -955,7 +955,7 @@ class Maze
 
 
 Linetracking lt;
-Maze maze;
+//Maze maze;
 Race race;
 
 
@@ -1020,11 +1020,11 @@ void executeGETRequest(String currentLine)
     //    {
     //        turnLeft90();
     //    }
-          if(currentLine.endsWith("GET /Maze"))
-          { 
-              Serial.println("test2");
-              maze.execute();
-          }
+//          if(currentLine.endsWith("GET /Maze"))
+//          { 
+//              Serial.println("test2");
+//              maze.execute();
+//          }
           if(currentLine.endsWith("GET /Race"))
           {
               race.execute();

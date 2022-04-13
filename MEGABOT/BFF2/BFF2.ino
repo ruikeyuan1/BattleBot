@@ -538,7 +538,7 @@ class Linetracking //LTV8_2!!!
         }
       }
     }
-    //YES
+    //YESSSS
     void executeMAYBE() {
       
 //        if(!executed)
@@ -548,10 +548,8 @@ class Linetracking //LTV8_2!!!
 //        }
         //OK STOP
         boolean fix = false;
-        boolean blackR = false;
-        boolean whiteR = false;
-        boolean blackL = false;
-        boolean whiteL = false;
+        boolean black = false;
+        boolean white = false;
         int flagFix;
         if(analogRead(rightSensor)>(FULLBLACK-300) && analogRead(leftSensor)>(FULLBLACK-300)) {
             check = false;
@@ -565,12 +563,12 @@ class Linetracking //LTV8_2!!!
             }
             while(analogRead(leftSensor)<(BLACKK-300) && analogRead(rightSensor)<(approachingBLACK+100))
             {
-              if(rightSensor>(BLACKK-300)){blackL = true;}
-              if(rightSensor<(approachingBLACK-100) && blackL){whiteL = true;}
+              if(rightSensor>(BLACKK-300)){black = true;}
+              if(rightSensor<(approachingBLACK-100) && black){white = true;}
               rotateLeft();
             } 
-            if(rightSensor<(approachingBLACK-100) && blackL){whiteL = true;}
-            if(blackL && whiteL){fixIt(0);}
+            if(rightSensor<(approachingBLACK-100) && black){white = true;}
+            if(black && white){fixIt(0);}
             check = true;
             rotateLeft();     
         }
@@ -582,12 +580,12 @@ class Linetracking //LTV8_2!!!
             }
             while(analogRead(rightSensor)<(BLACKK-300) && analogRead(leftSensor)<(approachingBLACK+100))
             {
-              if(leftSensor>(BLACKK-300)){blackR = true;}
-              if(leftSensor<(approachingBLACK-100) && blackR){whiteR = true;}
+              if(leftSensor>(BLACKK-300)){black = true;}
+              if(leftSensor<(approachingBLACK-100) && black){white = true;}
               rotateRight();
             } 
-            if(leftSensor<(approachingBLACK-100) && blackR){whiteR = true;}
-            if(blackR && whiteR){fixIt(1);}
+            if(leftSensor<(approachingBLACK-100) && black){white = true;}
+            if(black && white){fixIt(1);}
             check = true;
             rotateRight();   
         }
@@ -660,9 +658,9 @@ class Race {
     void sleft()
     {
     analogWrite(RB, 0);
-    analogWrite(RF, 180);
+    analogWrite(RF, 230);
     analogWrite(LB, 0);
-    analogWrite(LF, 100);
+    analogWrite(LF, 180);
 
     }
 
@@ -670,9 +668,9 @@ class Race {
     void sright()
     {
     analogWrite(RB, 0);
-    analogWrite(RF, 100);
+    analogWrite(RF, 180);
     analogWrite(LB, 0);
-    analogWrite(LF, 180);
+    analogWrite(LF, 230);
     }
 
 
@@ -767,149 +765,104 @@ class Race {
       digitalWrite(leftT, LOW);
       durationL = pulseIn(leftE, HIGH);  
       distanceL = (durationL * SOUND_SPEED/2);
-
-//      digitalWrite(TrigPin, LOW);
-//      delayMicroseconds(2);
-//      digitalWrite(TrigPin, HIGH);
-//      delayMicroseconds(10);
-//      digitalWrite(TrigPin, LOW);
-//      distanceS = pulseIn(EchoPin, HIGH)/58;  
       
       Serial.println((String) "F: " + distanceF);
       Serial.println((String) "L: " + distanceL);
       Serial.println((String) "R: " + distanceR);
-//      Serial.println((String) "S: " + distanceS);
       
-      if(distanceL < 5 && distanceF < 5 && distanceR < 5) {
+      if(distanceL < 5 && distanceF < 5 && distanceR < 5 ) {
           
           x = 0;
           sqrtRight = 0;
           sqrtLeft = 0;
           goStop();
 
-      } else if(distanceR > distanceL && distanceR > distanceF) {
+      } else if(distanceF > distanceR && distanceF > distanceL && distanceF > 5) {
+
+          Serial.println("FFF");
+          x = 0;
+          if(distanceF > 50) {
+            this->racegoForward(255, sqrtLeft, sqrtRight);
+          } else if(distanceF > 40) {
+            this->racegoForward(200, sqrtLeft, sqrtRight);
+          } else if(distanceF > 20) {
+            this->racegoForward(180, sqrtLeft, sqrtRight);
+          } else if(distanceF <= 20) {
+            this->racegoForward(150, sqrtLeft, sqrtRight);
+          }
+          
+          if(distanceR > distanceL+5) {
+            sqrtRight += sqrt(riight++);
+          }
+          if(distanceL > distanceR+5) {
+            sqrtLeft += sqrt(leeft++);
+          }
+
+          if(distanceL <= 8 && distanceR >= 12) {
+              this->ssright();
+          }
+          if(distanceR <= 8 && distanceL >= 12) {
+              this->ssleft(); 
+          }
+
+      } else if(distanceR > distanceL && distanceR > 5) {
           sqrtRight = 0;
           sqrtLeft = 0;
-//          Serial.println("RRR");
-          if(distanceF <= 15) {
-              x = 0;
-//              Serial.println("R3");
-              this->rotateRight();
-              
-          } else if(distanceF > 40) {
+          Serial.println("RRR");
+          if(distanceF > 50) {
 
               increase = sqrt(x);
               this->goRight(190+increase);
-              if(!(x>3000)){x+=5;}
+              if(!x>3000){x+=5;}
 
-          } else if(distanceF > 25) {
+          } else if(distanceF > 40) {
               x = 0;
-//              Serial.println("R1");
+              Serial.println("R1");
               this->sright(); 
-          } else if(distanceF > 15) {
+          } else if(distanceF > 20) {
               x = 0;
-//              Serial.println("R2");
+              Serial.println("R2");
               this->right();
+          } else if(distanceF <= 20) {
+              x = 0;
+              Serial.println("R3");
+              this->rotateRight();
           }
-        
 
-      } else if(distanceL > distanceR && distanceL > distanceF) {
+      } else if(distanceL > distanceR && distanceL > 5) {
           sqrtRight = 0;
           sqrtLeft = 0; 
-//           Serial.println("LLL");
-
-          if(distanceF <= 15) {
-              x = 0;
-//              Serial.println("L1");
-              this->rotateLeft();
-              
-          } else if(distanceF > 40) {
+           Serial.println("LLL");
+          if(distanceF > 50) {
 
               increase = sqrt(x);
               this->goLeft(190+increase);
-              if(!(x>3000)){x+=5;}
+              if(!x>3000){x+=5;}
 
-          } else if(distanceF > 25) {
-              x = 0;
-//              Serial.println("L1");
-              this->sleft();
-          } else if(distanceF > 15) {
-              x = 0;
-//              Serial.println("L1");
-              this->left();
-          } 
-
-       }  else if(distanceF > distanceR && distanceF > distanceL) {
-
-//          Serial.println("FFF");
-          x = 0;
-          if(distanceL < 5) {
-              this->rotateRight();
-          }
-          if(distanceR < 5) {
-              this->rotateLeft();
-          }
-          
-          if(distanceF <= 15) {
-            this->racegoForward(170, sqrtLeft, sqrtRight);
           } else if(distanceF > 40) {
-            this->racegoForward(230, sqrtLeft, sqrtRight);
-          } else if(distanceF > 25) {
-            this->racegoForward(200, sqrtLeft, sqrtRight);
-          } else if(distanceF > 15) {
-            this->racegoForward(180, sqrtLeft, sqrtRight);
-          } 
-
-          if(distanceL < 5) {
-              this->rotateRight();
-          }
-          if(distanceR < 5) {
+              x = 0;
+              Serial.println("L1");
+              this->sleft();
+          } else if(distanceF > 20) {
+              x = 0;
+              Serial.println("L1");
+              this->left();
+          } else if(distanceF <= 20) {
+              x = 0;
+              Serial.println("L1");
               this->rotateLeft();
           }
-//          if(distanceR > distanceL+5) {
-//            sqrtRight += sqrt(riight++);
-//          }
-//          if(distanceL > distanceR+5) {
-//            sqrtLeft += sqrt(leeft++);
-//          }
-
-//          if(distanceL <= 8 && distanceR >= 12) {
-//              this->right();
-//          }
-//          if(distanceR <= 8 && distanceL >= 12) {
-//              this->left(); 
-//          }
-
-      }
+       } else {
+          goBackward(250); x = 0;
+          sqrtRight = 0;
+          sqrtLeft = 0;
+       }
         
     }
 };
 
 
-int Distance(){
-  VL53L0X_RangingMeasurementData_t measure;
-  
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data 
-    return (measure.RangeMilliMeter);} 
-    else {
-    return -1;}
-  }
-
-int ultrasonic(){       
-  digitalWrite(TrigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TrigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TrigPin, LOW);
-  int distance = pulseIn(EchoPin, HIGH)/58;
-  Serial.print(distance);
-  Serial.print( "cm" );
-  Serial.println();
-  return distance;
-  //delay(1000);
-}
 
 
 
@@ -945,8 +898,8 @@ class Maze
     }
 
     void Forward(){
-        analogWrite(RF, 190);
-        analogWrite(LF, 190);
+        analogWrite(RF, 180);
+        analogWrite(LF, 180);
         analogWrite(RB, 0);
         analogWrite(LB, 0);
     }
@@ -959,8 +912,8 @@ class Maze
     }
 
     void turnRight(){
-        analogWrite(RB, 190);
-        analogWrite(LF, 190);
+        analogWrite(RB, 180);
+        analogWrite(LF, 180);
         analogWrite(RF, 0);
         analogWrite(LB, 0);      
     }
@@ -968,16 +921,28 @@ class Maze
     void turnLeft(){
         analogWrite(RB, 0);
         analogWrite(LF, 0);
-        analogWrite(RF, 190);
-        analogWrite(LB, 190);      
+        analogWrite(RF, 180);
+        analogWrite(LB, 180);      
     }
 
-    
+
 
 
     void execute()
     {   
-       
+        VL53L0X_RangingMeasurementData_t measure;
+        lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+        if (measure.RangeStatus != 4) {  // phase failures have incorrect data 
+            distanceF = (measure.RangeMilliMeter); 
+        }
+        
+        digitalWrite(TrigPin, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TrigPin, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(TrigPin, LOW);
+        durationS = pulseIn(EchoPin, HIGH); 
+        distanceS = durationS/58;
     
 //        digitalWrite(leftT, LOW);
 //        delayMicroseconds(2);
@@ -985,28 +950,25 @@ class Maze
 //        delayMicroseconds(10);
 //        digitalWrite(leftT, LOW);
 //        durationL = pulseIn(leftE, HIGH);  
-          distanceF = Distance();
-          distanceS = ultrasonic();
-        Serial.println((String) "F: " + distanceF);
-        Serial.println((String) "S: " + distanceS);
+//        distanceL = durationL/58;
+    
         
         if (distanceF > 200){
-            stopRobot();
-            delay(100);
-            Forward();
-            delay(150);
+          stopRobot();
+          delay(100);
+          Forward();
         }
-        else if(distanceS>20 && distanceS<125){
+        else if(distanceS>25 && distanceS<125){
           stopRobot();
           delay(250);
           turnRight();
-          delay(270);
+          delay(350);
           }
         else{
           stopRobot();
           delay(250);
           turnLeft();
-          delay(270);
+          delay(350);
           }
     }
 
@@ -1204,7 +1166,7 @@ class CTF {
     void runAway() {
 
       scan();
-      if(WiFi.RSSI(foundA) < -70 && WiFi.RSSI(foundC) < -70 && WiFi.RSSI(foundD) < -70 && WiFi.RSSI(foundE) < -70 && WiFi.RSSI(foundF) < -70)
+      if(WiFi.RSSI(foundA) < treshhold-20 || WiFi.RSSI(foundC) < treshhold-20 || WiFi.RSSI(foundD) < treshhold-20 || WiFi.RSSI(foundE) < treshhold-20 || WiFi.RSSI(foundF) < treshhold-20)
       {
         goStop(0);
       }
@@ -1240,9 +1202,11 @@ boolean hasFlag = false;
 
 void executeGETRequest(String currentLine)
 {
+          Serial.println((String) "\nyo: " + currentLine);
           if (currentLine.endsWith("GET /Forward")) {
   //            printHTMLServer(client, "The robot moves forward");
                 // 0 means it will go forward forever
+                Serial.println("test1");
                 goForward();
           }
           if (currentLine.endsWith("GET /Back")) {
@@ -1332,31 +1296,46 @@ void loop()
   
   WiFiClient client = server.available();   // listen for incoming clients
   if (client) {                             // if you get a client,
+    Serial.println("New Client.");           // print a message out the serial port                // make a String to hold incoming data from the client
     while (client.connected()) {            // loop while the client's connected
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
+        Serial.print("Reading: ");
+        Serial.write(c);                    // print it out the serial monitor
         if(c == 'G'){    
           currentLine = "";
           nextStep = true;
+          Serial.write("We got G");
         } else if (c == 'E' && nextStep) {  // if you got anything else but a carriage return character,
           nextStep = false;
           currentLine += 'G';
+          Serial.write("We got E");
           while (client.connected()) {
             if(c != '\n') {
               if(client.available()) {
                 currentLine += c;
+                Serial.write("Next: ");
                 c = client.read();
+                Serial.write(c);
               }
             } else {break;}
           }
-            currentLine = currentLine.substring(0, currentLine.length() - 10);
+          for(int i = 0; i<10; i++)
+          {
+            int lastIndex = currentLine.length() - 1;
+            currentLine.remove(lastIndex);
+            Serial.println(currentLine);
+          }
         }   
       }
     }
   }
   
+  Serial.println(currentLine);
   if(testIfCommand(currentLine)) {
       client.stop();
+      Serial.println();
+      Serial.println("Client Disconnected.");
       executeGETRequest(currentLine);
   }
   
