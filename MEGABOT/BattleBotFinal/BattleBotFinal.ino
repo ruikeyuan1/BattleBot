@@ -903,7 +903,7 @@ int ultrasonic(){
   digitalWrite(TrigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(TrigPin, LOW);
-  long durationR = pulseIn(rightE, HIGH);
+  long durationR = pulseIn(EchoPin, HIGH);
   float distanceR = (durationR * SOUND_SPEED/2);
   return distanceR;
   //delay(1000);
@@ -949,13 +949,6 @@ class Maze
         analogWrite(LB, 0);
     }
 
-    void Backward(){
-        analogWrite(RF, 0);
-        analogWrite(LF, 0);
-        analogWrite(RB, 190);
-        analogWrite(LB, 190);
-    }
-
     void stopRobot(){
         analogWrite(RB, 0);
         analogWrite(LF, 0);
@@ -994,17 +987,14 @@ class Maze
           distanceS = ultrasonic();
         Serial.println((String) "F: " + distanceF);
         Serial.println((String) "S: " + distanceS);
-        if (distanceF < 50) {
-            Backward();
-            delay(100);
-        }
+        
         if (distanceF > 200){
             stopRobot();
             delay(100);
             Forward();
             delay(150);
         }
-        else if(distanceS>27 && distanceS<125){
+        else if(distanceS>20 && distanceS<125){
           stopRobot();
           delay(250);
           turnRight();
