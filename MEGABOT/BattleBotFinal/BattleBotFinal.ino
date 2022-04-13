@@ -905,9 +905,6 @@ int ultrasonic(){
   digitalWrite(TrigPin, LOW);
   long durationR = pulseIn(rightE, HIGH);
   float distanceR = (durationR * SOUND_SPEED/2);
-  Serial.print(distance);
-  Serial.print( "cm" );
-  Serial.println();
   return distanceR;
   //delay(1000);
 }
