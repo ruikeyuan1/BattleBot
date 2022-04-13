@@ -949,6 +949,13 @@ class Maze
         analogWrite(LB, 0);
     }
 
+    void Backward(){
+        analogWrite(RF, 0);
+        analogWrite(LF, 0);
+        analogWrite(RB, 190);
+        analogWrite(LB, 190);
+    }
+
     void stopRobot(){
         analogWrite(RB, 0);
         analogWrite(LF, 0);
@@ -987,7 +994,10 @@ class Maze
           distanceS = ultrasonic();
         Serial.println((String) "F: " + distanceF);
         Serial.println((String) "S: " + distanceS);
-        
+        if (distanceF < 50) {
+            Backward();
+            delay(100);
+        }
         if (distanceF > 200){
             stopRobot();
             delay(100);
